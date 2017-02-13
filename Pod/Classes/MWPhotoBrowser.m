@@ -257,7 +257,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [items addObject:_nextButton];
         [items addObject:flexSpace];
     } else {
-        [items addObject:flexSpace];
+        items  = (NSMutableArray *)self.arrayButtonsToolBar;
     }
 
     // Right - Action
@@ -961,6 +961,11 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     if (index != _previousPageIndex) {
         if ([_delegate respondsToSelector:@selector(photoBrowser:didDisplayPhotoAtIndex:)])
             [_delegate photoBrowser:self didDisplayPhotoAtIndex:index];
+        if (self.arrayButtonsToolBar.count != 0) {
+            
+            [_toolbar setItems:self.arrayButtonsToolBar];
+            
+        }
         _previousPageIndex = index;
     }
     
