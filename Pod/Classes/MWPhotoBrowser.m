@@ -446,6 +446,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     }
     
     [_gradientToolBar removeFromSuperlayer];
+    [_gradient removeFromSuperlayer];
     
     // Super
     [super viewWillDisappear:animated];
