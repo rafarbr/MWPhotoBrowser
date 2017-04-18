@@ -481,14 +481,6 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     [navBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     [navBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsLandscapePhone];
     navBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor whiteColor]};
-    
-    UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [shareButton setImage:[UIImage imageNamed:@"ico-share"] forState:UIControlStateNormal];
-    shareButton.frame = CGRectMake(0, 0, 44, 44);
-    [shareButton addTarget:self action:nil forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *rightButton = [[UIBarButtonItem alloc] initWithCustomView:shareButton];
-    
-    self.navigationItem.rightBarButtonItem = rightButton;
 }
 
 - (UIImage *)imageFromLayer:(CALayer *)layer
