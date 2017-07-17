@@ -130,7 +130,7 @@
 		self.maximumZoomScale = 1;
 		self.minimumZoomScale = 1;
 		self.zoomScale = 1;
-		self.contentSize = CGSizeMake(0, 0);
+		self.contentSize = CGSizeMake(floorf(self.contentSize.width), floorf(self.contentSize.height));
 		
 		// Get image from browser as it handles ordering of fetching
 		UIImage *img = [_photoBrowser imageForPhoto:_photo];
@@ -211,9 +211,9 @@
 }
 
 - (void)showLoadingIndicator {
-    self.zoomScale = 0;
-    self.minimumZoomScale = 0;
-    self.maximumZoomScale = 0;
+    self.zoomScale = 0.1;
+    self.minimumZoomScale = 0.1;
+    self.maximumZoomScale = 0.1;
     _loadingIndicator.progress = 0;
     _loadingIndicator.hidden = NO;
     [self hideImageFailure];
