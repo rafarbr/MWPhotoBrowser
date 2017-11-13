@@ -19,6 +19,7 @@
 #endif
 
 @class MWPhotoBrowser;
+@class MWGridViewController;
 
 @protocol MWPhotoBrowserDelegate <NSObject>
 
@@ -35,10 +36,15 @@
 - (BOOL)photoBrowser:(MWPhotoBrowser *)photoBrowser isPhotoSelectedAtIndex:(NSUInteger)index;
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index selectedChanged:(BOOL)selected;
 - (void)photoBrowserDidFinishModalPresentation:(MWPhotoBrowser *)photoBrowser;
+- (NSArray<UIBarButtonItem *> *)photoBrowser:(MWPhotoBrowser *)photoBrowser toolBarItemsAtIndex:(NSUInteger)index;
 
 @end
 
-@interface MWPhotoBrowser : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate>
+@interface MWPhotoBrowser : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate> {
+    
+@public
+    MWGridViewController *_gridController;
+}
 
 @property (nonatomic, weak) IBOutlet id<MWPhotoBrowserDelegate> delegate;
 @property (nonatomic) BOOL zoomPhotosToFill;
@@ -52,7 +58,7 @@
 @property (nonatomic) BOOL autoPlayOnAppear;
 @property (nonatomic) NSUInteger delayToHideElements;
 @property (nonatomic, readonly) NSUInteger currentIndex;
-@property (nonatomic, strong) NSMutableArray *arrayButtonsToolBar;
+//@property (nonatomic, strong) NSMutableArray *arrayButtonsToolBar;
 
 // Customise image selection icons as they are the only icons with a colour tint
 // Icon should be located in the app's main bundle
@@ -74,3 +80,4 @@
 - (void)showPreviousPhotoAnimated:(BOOL)animated;
 
 @end
+

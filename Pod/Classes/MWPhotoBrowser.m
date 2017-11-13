@@ -160,6 +160,11 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     _pagingScrollView.showsVerticalScrollIndicator = NO;
     _pagingScrollView.backgroundColor = [UIColor blackColor];
     _pagingScrollView.contentSize = [self contentSizeForPagingScrollView];
+    
+    if ([self respondsToSelector:@selector(automaticallyAdjustsScrollViewInsets)]){
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
+    
     [self.view addSubview:_pagingScrollView];
     
     // Toolbar
@@ -170,7 +175,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     [_toolbar setBackgroundImage:[UIImage new] forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsLandscapePhone];
     _toolbar.barStyle = UIBarStyleBlackTranslucent;
     [_toolbar setShadowImage:[UIImage new] forToolbarPosition:UIBarPositionAny];
-    _toolbar.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+    _toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
     _gradientToolBar = [CAGradientLayer layer];
     _gradientToolBar.frame = CGRectMake(0, 0, CGRectGetWidth(_toolbar.bounds), CGRectGetHeight(_toolbar.bounds));
     _gradientToolBar.colors = [NSArray arrayWithObjects:(id)[[[UIColor blackColor] colorWithAlphaComponent:0.01] CGColor], (id)[[[UIColor blackColor] colorWithAlphaComponent:0.5] CGColor], nil];
@@ -267,32 +272,36 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [items addObject:_nextButton];
         [items addObject:flexSpace];
     } else {
-        items  = (NSMutableArray *)self.arrayButtonsToolBar;
+        if ([_delegate respondsToSelector:@selector(photoBrowser:toolBarItemsAtIndex:)]) {
+            items = [NSMutableArray arrayWithArray:[_delegate photoBrowser:self toolBarItemsAtIndex:_currentPageIndex]];
+        }
     }
     
     // Right - Action
-    if (_actionButton && !(!hasItems && !self.navigationItem.rightBarButtonItem)) {
-        [items addObject:_actionButton];
-    } else {
-        // We're not showing the toolbar so try and show in top right
-        if (_actionButton)
-            self.navigationItem.rightBarButtonItem = _actionButton;
-        [items addObject:fixedSpace];
+    //    if (_actionButton && !(!hasItems && !self.navigationItem.rightBarButtonItem)) {
+    //        [items addObject:_actionButton];
+    //    } else {
+    // We're not showing the toolbar so try and show in top right
+    if (_actionButton) {
+        self.navigationItem.rightBarButtonItem = _actionButton;
     }
+    //        [items addObject:fixedSpace];
+    //    }
     
     // Toolbar visibility
-    [_toolbar setItems:items];
-    BOOL hideToolbar = YES;
-    for (UIBarButtonItem* item in _toolbar.items) {
-        if (item != fixedSpace && item != flexSpace) {
-            hideToolbar = NO;
-            break;
+    if (_toolbar.items <= 0 ) {
+        [_toolbar setItems:items];
+        BOOL hideToolbar = YES;
+        for (UIBarButtonItem* item in _toolbar.items) {
+            if (item != fixedSpace && item != flexSpace) {
+                hideToolbar = NO;
+                break;
+            }
         }
-    }
-    if (hideToolbar) {
         [_toolbar removeFromSuperview];
-    } else {
-        [self.view addSubview:_toolbar];
+        if (!hideToolbar) {
+            [self.view addSubview:_toolbar];
+        }
     }
     
     // Update nav
@@ -474,7 +483,11 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     navBar.translucent = YES;
     
     _gradient = [CAGradientLayer layer];
-    _gradient.frame = CGRectMake(0, 0 - 22, CGRectGetWidth(self.navigationController.navigationBar.bounds), CGRectGetHeight(self.navigationController.navigationBar.bounds) + 22);
+    if (@available(iOS 11.0, *)) {
+        _gradient.frame = CGRectMake(0, 0 - self.view.safeAreaInsets.top, CGRectGetWidth(self.navigationController.navigationBar.bounds), CGRectGetHeight(self.navigationController.navigationBar.bounds) + self.view.safeAreaInsets.top);
+    } else {
+        _gradient.frame = CGRectMake(0, 0 - 22, CGRectGetWidth(self.navigationController.navigationBar.bounds), CGRectGetHeight(self.navigationController.navigationBar.bounds) + 22);
+    }
     _gradient.colors = [NSArray arrayWithObjects:(id)[[[UIColor blackColor] colorWithAlphaComponent:0.6] CGColor], (id)[[[UIColor blackColor] colorWithAlphaComponent:0.01] CGColor], nil];
     _gradient.opacity = 0.5;
     [navBar.layer insertSublayer:_gradient atIndex:0];
@@ -505,6 +518,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     _previousNavigationBarBackgroundImageDefault = [self.navigationController.navigationBar backgroundImageForBarMetrics:UIBarMetricsDefault];
     _previousNavigationBarBackgroundImageLandscapePhone = [self.navigationController.navigationBar backgroundImageForBarMetrics:UIBarMetricsLandscapePhone];
     _previousNavBarBarTextTintColor = self.navigationController.navigationBar.titleTextAttributes;
+    _previousNavBarShadowImage = self.navigationController.navigationBar.shadowImage;
 }
 
 - (void)restorePreviousNavBarAppearance:(BOOL)animated {
@@ -518,6 +532,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [navBar setBackgroundImage:_previousNavigationBarBackgroundImageDefault forBarMetrics:UIBarMetricsDefault];
         [navBar setBackgroundImage:_previousNavigationBarBackgroundImageLandscapePhone forBarMetrics:UIBarMetricsLandscapePhone];
         [navBar setTitleTextAttributes:_previousNavBarBarTextTintColor];
+        navBar.shadowImage = _previousNavBarShadowImage;
         [_gradient removeFromSuperlayer];
         // Restore back button if we need to
         if (_previousViewControllerBackButton) {
@@ -544,8 +559,14 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     _toolbar.frame = [self frameForToolbarAtOrientation:self.interfaceOrientation];
     
     //gradient
-    _gradientToolBar.frame = CGRectMake(0, 0, CGRectGetWidth(_toolbar.bounds), CGRectGetHeight(_toolbar.bounds));
-    _gradient.frame = CGRectMake(0, 0 - 22, CGRectGetWidth(self.navigationController.navigationBar.bounds), CGRectGetHeight(self.navigationController.navigationBar.bounds) + 22);
+    if (@available(iOS 11.0, *)) {
+        _gradientToolBar.frame = CGRectMake(0, 0, CGRectGetWidth(_toolbar.bounds), CGRectGetHeight(_toolbar.bounds) + self.view.safeAreaInsets.bottom);
+        _gradient.frame = CGRectMake(0, 0 - self.view.safeAreaInsets.top, CGRectGetWidth(self.navigationController.navigationBar.bounds), CGRectGetHeight(self.navigationController.navigationBar.bounds) + self.view.safeAreaInsets.top);
+    } else {
+        _gradientToolBar.frame = CGRectMake(0, 0, CGRectGetWidth(_toolbar.bounds), CGRectGetHeight(_toolbar.bounds));
+        _gradient.frame = CGRectMake(0, 0 - 22, CGRectGetWidth(self.navigationController.navigationBar.bounds), CGRectGetHeight(self.navigationController.navigationBar.bounds) + 22);
+    }
+    
     
     // Remember index
     NSUInteger indexPriorToLayout = _currentPageIndex;
@@ -589,13 +610,13 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     [self positionVideoLoadingIndicator];
     
     // Adjust contentOffset to preserve page location based on values collected prior to location
-    _pagingScrollView.contentOffset = [self contentOffsetForPageAtIndex:indexPriorToLayout];
+    if (!_pagingScrollView.dragging && !_pagingScrollView.decelerating)
+        _pagingScrollView.contentOffset = [self contentOffsetForPageAtIndex:indexPriorToLayout];
     [self didStartViewingPageAtIndex:_currentPageIndex]; // initial
     
     // Reset
     _currentPageIndex = indexPriorToLayout;
     _performingLayout = NO;
-    
 }
 
 #pragma mark - Rotation
@@ -1012,11 +1033,6 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     if (index != _previousPageIndex) {
         if ([_delegate respondsToSelector:@selector(photoBrowser:didDisplayPhotoAtIndex:)])
             [_delegate photoBrowser:self didDisplayPhotoAtIndex:index];
-        if (self.arrayButtonsToolBar.count != 0) {
-            
-            [_toolbar setItems:self.arrayButtonsToolBar];
-            
-        }
         _previousPageIndex = index;
     }
     
@@ -1062,6 +1078,9 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     CGFloat height = 44;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
         UIInterfaceOrientationIsLandscape(orientation)) height = 32;
+    if (@available(iOS 11.0, *)) {
+        return CGRectIntegral(CGRectMake(0, (self.view.bounds.size.height - height) - self.view.safeAreaInsets.bottom, self.view.bounds.size.width, height));
+    }
     return CGRectIntegral(CGRectMake(0, self.view.bounds.size.height - height, self.view.bounds.size.width, height));
 }
 
@@ -1464,7 +1483,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     [self cancelControlHiding];
     
     // Animations & positions
-    CGFloat animatonOffset = 20;
+    CGFloat animatonOffset = 0;
     CGFloat animationDuration = (animated ? 0.35 : 0);
     
     // Status bar
@@ -1723,3 +1742,4 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 }
 
 @end
+

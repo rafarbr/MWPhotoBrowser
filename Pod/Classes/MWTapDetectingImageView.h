@@ -25,3 +25,4 @@
 - (void)imageView:(UIImageView *)imageView tripleTapDetected:(UITouch *)touch;
 
 @end
+

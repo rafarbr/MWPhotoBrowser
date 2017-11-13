@@ -14,12 +14,12 @@
 #import "MWPhotoBrowser.h"
 
 @interface MWPhoto () {
-
+    
     BOOL _loadingInProgress;
     id <SDWebImageOperation> _webImageOperation;
     PHImageRequestID _assetRequestID;
     PHImageRequestID _assetVideoRequestID;
-        
+    
 }
 
 @property (nonatomic, strong) UIImage *image;
@@ -38,7 +38,7 @@
 #pragma mark - Class Methods
 
 + (MWPhoto *)photoWithImage:(UIImage *)image {
-	return [[MWPhoto alloc] initWithImage:image];
+    return [[MWPhoto alloc] initWithImage:image];
 }
 
 + (MWPhoto *)photoWithURL:(NSURL *)url {
@@ -307,13 +307,13 @@
             [self imageLoadingComplete];
         });
     }];
-
+    
 }
 
 // Release if we can get it again from path or url
 - (void)unloadUnderlyingImage {
     _loadingInProgress = NO;
-	self.underlyingImage = nil;
+    self.underlyingImage = nil;
 }
 
 - (void)imageLoadingComplete {
@@ -321,7 +321,7 @@
     // Complete so notify
     _loadingInProgress = NO;
     // Notify on next run loop
-    [self performSelector:@selector(postCompleteNotification) withObject:nil afterDelay:0];
+    [self performSelector:@selector(postCompleteNotification) withObject:nil afterDelay:0 inModes:@[NSRunLoopCommonModes]];
 }
 
 - (void)postCompleteNotification {
@@ -353,3 +353,4 @@
 }
 
 @end
+

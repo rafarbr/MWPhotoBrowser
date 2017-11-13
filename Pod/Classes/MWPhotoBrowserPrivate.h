@@ -39,7 +39,6 @@
     MBProgressHUD *_progressHUD;
     
     // Grid
-    MWGridViewController *_gridController;
     UIBarButtonItem *_gridPreviousLeftNavItem;
     UIBarButtonItem *_gridPreviousRightNavItem;
     
@@ -53,6 +52,7 @@
     UIBarButtonItem *_previousViewControllerBackButton;
     UIImage *_previousNavigationBarBackgroundImageDefault;
     UIImage *_previousNavigationBarBackgroundImageLandscapePhone;
+    UIImage *_previousNavBarShadowImage;
     NSDictionary *_previousNavBarBarTextTintColor;
     CAGradientLayer *_gradient;
     

@@ -14,3 +14,4 @@
 + (UIImage *)clearImageWithSize:(CGSize)size;
 
 @end
+
