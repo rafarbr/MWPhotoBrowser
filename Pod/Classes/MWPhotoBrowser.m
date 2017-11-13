@@ -205,6 +205,11 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [self.view addGestureRecognizer:swipeGesture];
     }
     
+    // Disable scrollview's content inset from being automatically adjusted
+    if ([self respondsToSelector:@selector(automaticallyAdjustsScrollViewInsets)]){
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
+    
     // Super
     [super viewDidLoad];
     
