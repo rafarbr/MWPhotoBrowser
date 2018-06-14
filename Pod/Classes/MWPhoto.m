@@ -346,6 +346,6 @@
         _assetVideoRequestID = PHInvalidImageRequestID;
     }
 }
-
+ 
 @end
 
