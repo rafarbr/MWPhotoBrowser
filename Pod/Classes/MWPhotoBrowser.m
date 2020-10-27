@@ -394,11 +394,11 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [self jumpToPageAtIndex:_pageIndexBeforeRotation animated:NO];
     }
     
-    UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
-    
-    if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
-        statusBar.backgroundColor = [UIColor clearColor];
-    }
+//    UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
+//
+//    if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
+//        statusBar.backgroundColor = [UIColor clearColor];
+//    }
     
     // Layout
     [self.view setNeedsLayout];
@@ -452,12 +452,12 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [[UIApplication sharedApplication] setStatusBarStyle:_previousStatusBarStyle animated:animated];
     }
     
-    UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
-    
-    if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
-        
-        statusBar.backgroundColor = [UIColor colorWithRed:205/255.0 green:49/255.0 blue:40/255.0 alpha:1];
-    }
+//    UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
+//
+//    if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
+//
+//        statusBar.backgroundColor = [UIColor colorWithRed:205/255.0 green:49/255.0 blue:40/255.0 alpha:1];
+//    }
     
     [_gradientToolBar removeFromSuperlayer];
     [_gradient removeFromSuperlayer];
