@@ -19,7 +19,6 @@
     
     MWPhotoBrowser __weak *_photoBrowser;
     MWTapDetectingView *_tapView; // for background taps
-    MWTapDetectingImageView *_photoImageView;
     DACircularProgressView *_loadingIndicator;
     UIImageView *_loadingError;
     
@@ -28,6 +27,8 @@
 @end
 
 @implementation MWZoomingScrollView
+
+@synthesize photoImageView = _photoImageView;
 
 - (id)initWithPhotoBrowser:(MWPhotoBrowser *)browser {
     if ((self = [super init])) {
@@ -82,6 +83,7 @@
         [_photo cancelAnyLoading];
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    _photoImageView = nil;
 }
 
 - (void)prepareForReuse {
@@ -136,10 +138,7 @@
         // Get image from browser as it handles ordering of fetching
         UIImage *img = [_photoBrowser imageForPhoto:_photo];
         if (img) {
-            
-            // Hide indicator
-            [self hideLoadingIndicator];
-            
+                        
             // Set image
             _photoImageView.image = img;
             _photoImageView.hidden = NO;
@@ -150,6 +149,9 @@
             photoImageViewFrame.size = img.size;
             _photoImageView.frame = photoImageViewFrame;
             self.contentSize = photoImageViewFrame.size;
+            
+            // Hide indicator
+            [self hideLoadingIndicator];
             
             // Set zoom to minimum zoom
             [self setMaxMinZoomScalesForCurrentBounds];
@@ -212,11 +214,11 @@
 }
 
 - (void)showLoadingIndicator {
+    _loadingIndicator.progress = 0;
+    _loadingIndicator.hidden = NO;
     self.zoomScale = 0;
     self.minimumZoomScale = 0;
     self.maximumZoomScale = 0;
-    _loadingIndicator.progress = 0;
-    _loadingIndicator.hidden = NO;
     [self hideImageFailure];
 }
 
@@ -378,7 +380,6 @@
     // Center
     if (!CGRectEqualToRect(_photoImageView.frame, frameToCenter))
         _photoImageView.frame = frameToCenter;
-    
 }
 
 #pragma mark - UIScrollViewDelegate
